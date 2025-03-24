@@ -107,9 +107,9 @@
         return;
     }
 
-    // แปลงรูปแบบวันที่เป็น DD/MM/YYYY
+    // แปลงรูปแบบวันที่เป็น MM/DD/YYYY
     let parts = selectedDate.split('-');
-    let formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    let formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; // เปลี่ยนลำดับ parts
 
     resultElement.innerHTML = "Searching...";
     resultElement.style.color = "blue";
