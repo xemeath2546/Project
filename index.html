@@ -81,7 +81,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>Cleaning Schedule Look</h2>
+        <h2>Cleaning Schedule Lookup</h2>
         <input type="date" id="dateInput">
         <button id="submitBtn" onclick="submitDate()">Search</button>
         <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
@@ -108,7 +108,7 @@
     }
 
     // แปลงรูปแบบวันที่เป็น DD/MM/YYYY
-    let parts = selectedDate.split('DD/MM/YYYY');
+    let parts = selectedDate.split('-');
     let formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
 
     resultElement.innerHTML = "Searching...";
