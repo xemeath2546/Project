@@ -1,70 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Lookup</title>
+    <title>Cleaning Schedule Lookup</title>
     <style>
-        /* Background Styling */
         body {
-            background: url('background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            font-family: Arial, sans-serif;
+            background: #255cdc;
+            color: #333;
+            font-family: 'Poppins', sans-serif;
             text-align: center;
-            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-
-        /* Main Container */
         .container {
-            background: rgba(0, 0, 0, 0.5);
+            background: #ffffff;
             padding: 20px;
-            border-radius: 15px;
-            width: 350px;
-            margin: 100px auto;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        /* Input Box */
-        input[type="text"] {
-            padding: 10px;
+        input[type="date"] {
+            padding: 8px;
             width: 80%;
-            border: 2px solid #ccc;
+            border: 2px solid #f5f5f5;
             border-radius: 5px;
-            transition: 0.3s;
-            outline: none;
+            font-size: 14px;
+            text-align: center;
         }
-        input[type="text"]:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 10px #007bff;
-        }
-        /* LOGO */
-        .logo {
-            width: 100px; 
-            height: auto; 
-        } 
-        /* Submit Button */
         button {
-            margin-top: 10px; /* เพิ่มระยะห่างด้านบน */
-            padding: 10px 20px;
+            width: 90%;
+            padding: 10px;
             background: #007bff;
             color: white;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 20px;
             transition: 0.3s;
+            font-size: 16px;
+            margin-top: 10px;
         }
         button:hover {
             background: #0056b3;
         }
-
-        /* Loading GIF (Hidden at Start) */
-        #loadingGif {
-            display: none; /* ซ่อนตอนเริ่มต้น */
-            width: 70px;
-            margin: 20px auto;
-        }
-
-        /* Custom Modal */
+        /* .loading {
+            display: none;
+            height: 60px;
+            margin: 10px auto;
+        } */
         .modal {
             display: none;
             position: fixed;
@@ -73,42 +61,33 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
+            align-items: center;
         }
         .modal-content {
-            background-color: white;
-            color: black;
+            background: white;
             padding: 20px;
             border-radius: 10px;
-            width: 300px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 1);
+            width: 90%;
+            max-width: 300px;
         }
-        .modal-content button {
+        .room-list {
+            text-align: left;
             margin-top: 10px;
-            padding: 5px 10px;
-            border: none;
-            background: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img class="logo" src="HOMA-LOGO150x34.png" alt="HOMA-LOGO150x34">
-        <h2>Please Enter Room Number</h2>
-        <input type="text" id="roomNumber" placeholder="Enter room number (e.g., B104)">
-        <button id="submitBtn" onclick="submitRoom()">Submit</button>
-        <br>
-        <img id="loadingGif" src="loading.gif" alt="Loading...">
-        <p id="result"></p>
+        <h2>Cleaning Schedule Lookup</h2>
+        <input type="date" id="dateInput">
+        <button id="submitBtn" onclick="submitDate()">Search</button>
+        <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
+        <div id="result"></div>
     </div>
 
-    <!-- Custom Modal Popup -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <p id="modalMessage"></p>
@@ -117,67 +96,50 @@
     </div>
 
     <script>
-        function submitRoom() {
-            let roomNumber = document.getElementById('roomNumber').value.trim();
-            let pattern = /^[abcABC]\d{3}$/;
+        function submitDate() {
+            let selectedDate = document.getElementById('dateInput').value;
             let resultElement = document.getElementById('result');
             let submitBtn = document.getElementById('submitBtn');
             let loadingGif = document.getElementById('loadingGif');
 
-            // Convert UTC Date to Bangkok Time
-            function convertToBangkokTime(utcDateString) {
-                let utcDate = new Date(utcDateString);
-                let bangkokOffset = 7 * 60 * 60 * 1000; 
-                let bangkokDate = new Date(utcDate.getTime() + bangkokOffset);
-                return bangkokDate.toISOString().split("T")[0];
+            if (!selectedDate) {
+                showModal("❌ Please select a date!");
+                return;
             }
 
-            if (pattern.test(roomNumber)) {
-                resultElement.innerText = "Searching...";
-                resultElement.style.color = "blue";
-                loadingGif.style.display = "block"; // Show GIF when searching
-                submitBtn.disabled = true;
+            resultElement.innerHTML = "Searching...";
+            resultElement.style.color = "blue";
+            loadingGif.style.display = "block";
+            submitBtn.disabled = true;
 
-                fetch("https://script.google.com/macros/s/AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb/exec?room=" + encodeURIComponent(roomNumber))
-                .then(response => response.json())
-                .then(data => {
-                    loadingGif.style.display = "none"; // Hide GIF when done
-                    submitBtn.disabled = false;
+            fetch("https://script.google.com/macros/s/AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb/exec?date=" + encodeURIComponent(selectedDate))
+            .then(response => response.json())
+            .then(data => {
+                loadingGif.style.display = "none";
+                submitBtn.disabled = false;
 
-                    if (data.schedule) {
-                        let correctDate = convertToBangkokTime(data.schedule);
-                        resultElement.innerText = "Scheduled Cleaning: " + correctDate;
-                        resultElement.style.color = "sky";
-                        showModal("✅ Room: " + roomNumber + "<br>Cleaning Date: " + correctDate);
-                    } else if (data.error) {
-                        resultElement.innerText = data.error;
-                        resultElement.style.color = "red";
-                        showModal("❌ " + data.error);
-                    }
-                })
-                .catch(error => {
-                    console.log("Error:", error);
-                    resultElement.innerText = "❌ An error occurred while retrieving data.";
+                if (data.rooms && data.rooms.length > 0) {
+                    let roomList = "<h3>Rooms to Clean:</h3><ul class='room-list'>";
+                    data.rooms.forEach(room => {
+                        roomList += `<li>Room: ${room}</li>`;
+                    });
+                    roomList += "</ul>";
+                    resultElement.innerHTML = roomList;
+                    resultElement.style.color = "green";
+                } else {
+                    resultElement.innerText = "❌ No rooms scheduled for cleaning on this date.";
                     resultElement.style.color = "red";
-                    showModal("❌ An error occurred. Please try again.");
-
-                    loadingGif.style.display = "none"; // Hide GIF if error occurs
-                    submitBtn.disabled = false;
-                });
-
-            } else {
-                resultElement.innerText = "❌ Invalid room format!";
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+                resultElement.innerText = "❌ Error retrieving data. Please try again.";
                 resultElement.style.color = "red";
-                showModal("❌ Invalid room format!");
-            }
+                loadingGif.style.display = "none";
+                submitBtn.disabled = false;
+                showModal("❌ An error occurred. Please try again.");
+            });
         }
-
-        // Close modal when clicking outside the box
-        document.getElementById("myModal").addEventListener("click", function(event) {
-            if (event.target === this) {
-                closeModal();
-            }
-        });
 
         function showModal(message) {
             document.getElementById("modalMessage").innerHTML = message;
