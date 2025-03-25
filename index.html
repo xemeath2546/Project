@@ -109,7 +109,10 @@
     
             const parts = selectedDate.split('-');
             const formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`;
-    
+            const encodedDate = encodeURIComponent(formattedDate); // เข้ารหัส URL
+
+            fetch("https://script.google.com/macros/s/1x2JDE8m_N9ALk1oXLKULxmmi5lRIYtyUr40DCppdH4AIaN5SD-WSAWu2/exec?date=" + encodedDate)
+
             resultElement.innerHTML = "Searching...";
             resultElement.style.color = "blue";
             loadingGif.style.display = "block";
