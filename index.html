@@ -81,7 +81,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>Cleaning Schedule Lookup Test</h2>
+        <h2>Cleaning Schedule Lookup</h2>
         <input type="date" id="dateInput">
         <button id="submitBtn" onclick="submitDate()">Search</button>
         <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
@@ -97,59 +97,63 @@
 
     <script>
         function submitDate() {
-    let selectedDate = document.getElementById('dateInput').value;
-    let resultElement = document.getElementById('result');
-    let submitBtn = document.getElementById('submitBtn');
-    let loadingGif = document.getElementById('loadingGif');
-
-    if (!selectedDate) {
-        showModal("❌ Please select a date!");
-        return;
-    }
-
-    // แปลงรูปแบบวันที่เป็น MM/DD/YYYY
-    let parts = selectedDate.split('-');
-    let formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; // เปลี่ยนลำดับ parts
-
-    resultElement.innerHTML = "Searching...";
-    resultElement.style.color = "blue";
-    loadingGif.style.display = "block";
-    submitBtn.disabled = true;
-
-    fetch("https://script.google.com/macros/s/AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb/exec?date=" + encodeURIComponent(formattedDate)) //ส่งค่าวันที่ที่แปลงแล้ว
-        .then(response => response.json())
-        .then(data => {
-            loadingGif.style.display = "none";
-            submitBtn.disabled = false;
-
-            if (data.rooms && data.rooms.length > 0) {
-                let roomList = "<h3>Rooms to Clean:</h3><ul class='room-list'>";
-                data.rooms.forEach(room => {
-                    roomList += `<li>Room: ${room}</li>`;
-                });
-                roomList += "</ul>";
-                resultElement.innerHTML = roomList;
-                resultElement.style.color = "green";
-            } else {
-                resultElement.innerText = "❌ No rooms scheduled for cleaning on this date.";
-                resultElement.style.color = "red";
+            const selectedDate = document.getElementById('dateInput').value;
+            const resultElement = document.getElementById('result');
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingGif = document.getElementById('loadingGif');
+    
+            if (!selectedDate) {
+                showModal("❌ Please select a date!");
+                return;
             }
-        })
-        .catch(error => {
-            console.error("Error fetching data:", error);
-            resultElement.innerText = "❌ Error retrieving data. Please try again.";
-            resultElement.style.color = "red";
-            loadingGif.style.display = "none";
-            submitBtn.disabled = false;
-            showModal("❌ An error occurred. Please try again.");
-        });
-}
-
+    
+            const parts = selectedDate.split('-');
+            const formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`;
+    
+            resultElement.innerHTML = "Searching...";
+            resultElement.style.color = "blue";
+            loadingGif.style.display = "block";
+            submitBtn.disabled = true;
+    
+            fetch("https://script.google.com/macros/s/AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb/exec?date=" + encodeURIComponent(formattedDate))
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingGif.style.display = "none";
+                    submitBtn.disabled = false;
+    
+                    if (data && data.rooms && data.rooms.length > 0) {
+                        let roomList = "<h3>Rooms to Clean:</h3><ul class='room-list'>";
+                        data.rooms.forEach(room => {
+                            roomList += `<li>Room: ${room}</li>`;
+                        });
+                        roomList += "</ul>";
+                        resultElement.innerHTML = roomList;
+                        resultElement.style.color = "green";
+                    } else {
+                        resultElement.innerText = "❌ No rooms scheduled for cleaning on this date.";
+                        resultElement.style.color = "red";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                    resultElement.innerText = "❌ Error retrieving data. Please try again.";
+                    resultElement.style.color = "red";
+                    loadingGif.style.display = "none";
+                    submitBtn.disabled = false;
+                    showModal("❌ An error occurred. Please try again.");
+                });
+        }
+    
         function showModal(message) {
             document.getElementById("modalMessage").innerHTML = message;
             document.getElementById("myModal").style.display = "flex";
         }
-
+    
         function closeModal() {
             document.getElementById("myModal").style.display = "none";
         }
