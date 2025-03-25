@@ -116,7 +116,7 @@
     loadingGif.style.display = "block";
     submitBtn.disabled = true;
 
-    fetch("AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb?date=" + encodeURIComponent(formattedDate)) //ส่งค่าวันที่ที่แปลงแล้ว
+    fetch("https://script.google.com/macros/s/AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb/exec?date=" + encodeURIComponent(formattedDate)) //ส่งค่าวันที่ที่แปลงแล้ว
         .then(response => response.json())
         .then(data => {
             loadingGif.style.display = "none";
