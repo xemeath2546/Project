@@ -177,7 +177,7 @@
                     } else if (data && data.message) {
                         resultElement.innerHTML = `<p style="color: orange; font-size: 18px; text-align: center;">${data.message}</p>`;
                     } else {
-                        resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No cleaning schedule found for Date ${dateInput}.</p>`;
+                         resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No cleaning schedule found for Date ${dateInput}.</p>`;
                     }
                 })
                 .catch(error => {
