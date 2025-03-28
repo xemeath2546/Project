@@ -135,52 +135,63 @@
 
     <script>
         function submitRoom() {
-            const roomNumber = document.getElementById('roomInput').value;
-            const resultElement = document.getElementById('result');
-            const submitBtn = document.getElementById('submitBtn');
-            const loadingGif = document.getElementById('loadingGif');
-
-            if (!roomNumber) {
-                showModal("❌ Please enter a Room Number!");
-                return;
-            }
-
-            resultElement.innerHTML = "Searching...";
-            resultElement.style.color = "blue";
-            loadingGif.style.display = "block";
-            submitBtn.disabled = true;
-
-            fetch("https://script.google.com/macros/s/AKfycbxTBnfWrPRFXQ-IIph1mVptON7zeuqpCtxvOBsaBB_hyHcbJ4RZHcW4wX1he-jRu0GgZg/exec?room=" + encodeURIComponent(roomNumber))
-                .then(response => response.json())
-                .then(data => {
-                    loadingGif.style.display = "none";
-                    submitBtn.disabled = false;
-
-                    if (data && data.schedule) {
-                        resultElement.innerHTML = `<p style="color: green; font-size: 18px;">Room ${roomNumber} is scheduled for cleaning on: ${data.schedule}</p>`;
-                    } else if (data && data.message) {
-                        resultElement.innerHTML = `<p style="color: orange; font-size: 18px; text-align: center;">${data.message}</p>`;
-                    } else {
-                        resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No cleaning schedule found for Room ${roomNumber}.</p>`;
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching data:", error);
-                    resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ Error retrieving data. Please try again.</p>`;
-                    loadingGif.style.display = "none";
-                    submitBtn.disabled = false;
-                    showModal("❌ An error occurred. Please try again.");
-                });
+          const roomNumber = document.getElementById('roomInput').value;
+          const resultElement = document.getElementById('result');
+          const submitBtn = document.getElementById('submitBtn');
+          const loadingGif = document.getElementById('loadingGif');
+      
+          if (!roomNumber) {
+            showModal("❌ Please enter a Room Number!");
+            return;
+          }
+      
+          resultElement.innerHTML = "Searching...";
+          resultElement.style.color = "blue";
+          loadingGif.style.display = "block";
+          submitBtn.disabled = true;
+      
+          // แก้ไข URL ให้ถูกต้อง
+          const scriptUrl = "https://script.google.com/macros/s/AKfycbxTBnfWrPRFXQ-IIph1mVptON7zeuqpCtxvOBsaBB_hyHcbJ4RZHcW4wX1he-jRu0GgZg/exec"; // ใส่ URL ของ Apps Script ของคุณ
+          const url = `${scriptUrl}?room=${encodeURIComponent(roomNumber)}`; // สร้าง URL พร้อมพารามิเตอร์ room
+          console.log("Fetching URL:", url); // Log the URL
+      
+          fetch(url)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              loadingGif.style.display = "none";
+              submitBtn.disabled = false;
+      
+              if (data && data.schedule) {
+                resultElement.innerHTML = `<p style="color: green; font-size: 18px;">Room ${roomNumber} is scheduled for cleaning on: ${data.schedule}</p>`;
+              } else if (data && data.message) {
+                resultElement.innerHTML = `<p style="color: orange; font-size: 18px; text-align: center;">${data.message}</p>`;
+              } else {
+                resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No cleaning schedule found for Room ${roomNumber}.</p>`;
+              }
+            })
+            .catch(error => {
+              console.error("Error fetching data:", error);
+              resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ Error: ${error.message || 'An unknown error occurred. Please try again.'}</p>`;
+              loadingGif.style.display = "none";
+              submitBtn.disabled = false;
+              showModal("❌ An error occurred. Please try again.");
+            });
         }
-
+      
         function showModal(message) {
-            document.getElementById("modalMessage").innerHTML = message;
-            document.getElementById("myModal").style.display = "flex";
+          document.getElementById("modalMessage").innerHTML = message;
+          document.getElementById("myModal").style.display = "flex";
         }
-
+      
         function closeModal() {
-            document.getElementById("myModal").style.display = "none";
+          document.getElementById("myModal").style.display = "none";
         }
-    </script>
+      </script>
+      
 </body>
 </html>
