@@ -4,7 +4,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cleaning Schedule Lookup</title>
+    <title>Room Cleaning Schedule Lookup</title>
     <style>
         body {
             background: #255cdc;
@@ -14,11 +14,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Changed to min-height */
+            min-height: 100vh;
             margin: 0;
-            padding-bottom: 70px; /* Add padding at the bottom for fixed button */
-            box-sizing: border-box; /* Include padding in body's total width/height */
-            position: relative; /* Needed for absolute positioning of button */
+            padding-bottom: 70px;
+            box-sizing: border-box;
+            position: relative;
         }
         .container {
             background: #ffffff;
@@ -28,49 +28,49 @@
             max-width: 400px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        input[type="date"] {
-            padding: 10px; /* Increased padding */
-            width: calc (100% - 20px); /* Adjusted width to account for padding */
+        input[type="text"] {
+            padding: 10px;
+            width: calc(100% - 20px);
             border: 2px solid #f5f5f5;
             border-radius: 5px;
-            font-size: 16px; /* Increased font size */
+            font-size: 16px;
             text-align: center;
-            margin-bottom: 20px; /* Added margin below input */
+            margin-bottom: 20px;
         }
         button {
             width: 90%;
-            padding: 12px; /* Increased padding */
+            padding: 12px;
             background: #007bff;
             color: white;
             border: none;
             cursor: pointer;
-            border-radius: 25px; /* Increased border-radius */
+            border-radius: 25px;
             transition: 0.3s;
-            font-size: 18px; /* Increased font size */
-            margin-top: 20px; /* Increased margin top */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Added shadow */
-            position: fixed; /* Fix button to bottom */
+            font-size: 18px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
         }
         button:hover {
             background: #0056b3;
-            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3); /* Increased shadow on hover*/
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
         }
-        button:active{
-           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Smaller shadow on click */
-           transform: translateX(-50%) translateY(2px); /* Move button down slightly on click */
+        button:active {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            transform: translateX(-50%) translateY(2px);
         }
         .loading {
             display: none;
             height: 60px;
-            margin: 20px auto; /* Increased margin */
+            margin: 20px auto;
         }
         #result {
-            margin-top: 30px; /* Increased margin */
-            font-size: 16px; /* Increased font size */
-            text-align: left; /* Align result text to the left */
+            margin-top: 30px;
+            font-size: 16px;
+            text-align: left;
         }
         .modal {
             display: none;
@@ -94,23 +94,22 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .modal-content button {
-            width: auto; /* Adjusted button width in modal */
+            width: auto;
             padding: 10px 20px;
             margin-top: 15px;
-            position: static; /* Override fixed positioning */
-            transform: translateX(0); /* Reset horizontal translation */
+            position: static;
+            transform: translateX(0);
         }
-
         .room-list {
             text-align: left;
             margin-top: 15px;
-            padding-left: 20px; /* Add padding for indentation of list */
+            padding-left: 20px;
         }
-        .room-list li{
-            margin-bottom: 5px; /* Add space between list items */
+        .room-list li {
+            margin-bottom: 5px;
             font-size: 16px;
         }
-        h3{
+        h3 {
             font-size: 18px;
             margin-bottom: 10px;
             color: #008000;
@@ -121,8 +120,8 @@
 <body>
     <div class="container">
         <h2>Cleaning Schedule Lookup</h2>
-        <input type="date" id="dateInput">
-        <button id="submitBtn" onclick="submitDate()">Search</button>
+        <input type="text" id="roomInput" placeholder="Enter Room Number">
+        <button id="submitBtn" onclick="submitRoom()">Search</button>
         <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
         <div id="result"></div>
     </div>
@@ -135,43 +134,34 @@
     </div>
 
     <script>
-        function submitDate() {
-            const selectedDate = document.getElementById('dateInput').value;
+        function submitRoom() {
+            const roomNumber = document.getElementById('roomInput').value;
             const resultElement = document.getElementById('result');
             const submitBtn = document.getElementById('submitBtn');
             const loadingGif = document.getElementById('loadingGif');
 
-            if (!selectedDate) {
-                showModal("❌ Please select a date!");
+            if (!roomNumber) {
+                showModal("❌ Please enter a Room Number!");
                 return;
             }
-
-            const parts = selectedDate.split('-');
-            const formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`;
 
             resultElement.innerHTML = "Searching...";
             resultElement.style.color = "blue";
             loadingGif.style.display = "block";
             submitBtn.disabled = true;
 
-            fetch("https://script.google.com/macros/s/AKfycbxTBnfWrPRFXQ-IIph1mVptON7zeuqpCtxvOBsaBB_hyHcbJ4RZHcW4wX1he-jRu0GgZg/exec?date=" + encodeURIComponent(formattedDate))
+            fetch("https://script.google.com/macros/s/AKfycbxTBnfWrPRFXQ-IIph1mVptON7zeuqpCtxvOBsaBB_hyHcbJ4RZHcW4wX1he-jRu0GgZg/exec?room=" + encodeURIComponent(roomNumber))
                 .then(response => response.json())
                 .then(data => {
                     loadingGif.style.display = "none";
                     submitBtn.disabled = false;
 
-                    if (data && data.rooms && data.rooms.length > 0) {
-                        let roomList = "<h3>Rooms to Clean:</h3><ul class='room-list'>";
-                        data.rooms.forEach(room => {
-                            roomList += `<li>Room: ${room}</li>`;
-                        });
-                        roomList += "</ul>";
-                        resultElement.innerHTML = roomList;
-                        resultElement.style.color = "green";
+                    if (data && data.schedule) {
+                        resultElement.innerHTML = `<p style="color: green; font-size: 18px;">Room ${roomNumber} is scheduled for cleaning on: ${data.schedule}</p>`;
                     } else if (data && data.message) {
                         resultElement.innerHTML = `<p style="color: orange; font-size: 18px; text-align: center;">${data.message}</p>`;
                     } else {
-                        resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No rooms scheduled for cleaning on this date.</p>`;
+                        resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No cleaning schedule found for Room ${roomNumber}.</p>`;
                     }
                 })
                 .catch(error => {
