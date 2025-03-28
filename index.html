@@ -28,7 +28,7 @@
             max-width: 400px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        input[type="text"] {
+        input[type="text"], input[type="date"]{
             padding: 10px;
             width: calc(100% - 20px);
             border: 2px solid #f5f5f5;
@@ -120,7 +120,7 @@
 <body>
     <div class="container">
         <h2>Cleaning Schedule Lookup</h2>
-        <input type="text" id="roomInput" placeholder="Enter Room Number">
+        <input type="date" id="dateInput" placeholder="Enter Date">
         <button id="submitBtn" onclick="submitRoom()">Search</button>
         <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
         <div id="result"></div>
@@ -135,13 +135,13 @@
 
     <script>
         function submitRoom() {
-            const roomNumber = document.getElementById('roomInput').value;
+            const dateInput = document.getElementById('dateInput').value;
             const resultElement = document.getElementById('result');
             const submitBtn = document.getElementById('submitBtn');
             const loadingGif = document.getElementById('loadingGif');
 
-            if (!roomNumber) {
-                showModal("❌ Please enter a Room Number!");
+            if (!dateInput) {
+                showModal("❌ Please enter a Date!");
                 return;
             }
 
@@ -152,7 +152,7 @@
 
             // **ตรวจสอบ URL อย่างละเอียดและสร้าง URL ที่ถูกต้อง**
             const scriptUrl = "https://script.google.com/macros/s/AKfycbxTBnfWrPRFXQ-IIph1mVptON7zeuqpCtxvOBsaBB_hyHcbJ4RZHcW4wX1he-jRu0GgZg/exec"; // **แทนที่ด้วย URL จริงของเว็บแอปของคุณ**
-            const url = scriptUrl + "?room=" + encodeURIComponent(roomNumber);
+            const url = scriptUrl + "?date=" + encodeURIComponent(dateInput);
             console.log("Fetching URL:", url); // Log URL เพื่อตรวจสอบ
 
             // **ตรวจสอบการเรียก fetch()**
@@ -167,12 +167,17 @@
                     loadingGif.style.display = "none";
                     submitBtn.disabled = false;
 
-                    if (data && data.schedule) {
-                        resultElement.innerHTML = `<p style="color: green; font-size: 18px;">Room ${roomNumber} is scheduled for cleaning on: ${data.schedule}</p>`;
+                    if (data && data.rooms) {
+                        let roomsHtml = '<p style="color: green; font-size: 18px;">Rooms scheduled for cleaning on ' + dateInput + ':</p><ul class="room-list">';
+                        data.rooms.forEach(room => {
+                            roomsHtml += `<li>Room ${room}</li>`;
+                        });
+                        roomsHtml += '</ul>';
+                        resultElement.innerHTML = roomsHtml;
                     } else if (data && data.message) {
                         resultElement.innerHTML = `<p style="color: orange; font-size: 18px; text-align: center;">${data.message}</p>`;
                     } else {
-                        resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No cleaning schedule found for Room ${roomNumber}.</p>`;
+                        resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No cleaning schedule found for Date ${dateInput}.</p>`;
                     }
                 })
                 .catch(error => {
