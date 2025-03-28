@@ -108,15 +108,14 @@
             }
     
             const parts = selectedDate.split('-');
-            const formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`;
+            const formattedDate = `<span class="math-inline">\{parts\[1\]\}/</span>{parts[2]}/${parts[0]}`;
     
             resultElement.innerHTML = "Searching...";
             resultElement.style.color = "blue";
             loadingGif.style.display = "block";
             submitBtn.disabled = true;
     
-            // ใช้ fetch
-            fetch("https://script.google.com/macros/s/AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb/exec?date=" + encodeURIComponent(formattedDate)) // แทนที่ YOUR_GOOGLE_APPS_SCRIPT_URL ด้วย URL ของ Google Apps Script
+            fetch("https://script.google.com/macros/s/AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb/exec?date=" + encodeURIComponent(formattedDate))
                 .then(response => response.json())
                 .then(data => {
                     loadingGif.style.display = "none";
@@ -130,6 +129,9 @@
                         roomList += "</ul>";
                         resultElement.innerHTML = roomList;
                         resultElement.style.color = "green";
+                    } else if (data && data.message) { // ตรวจสอบ data.message
+                        resultElement.innerText = data.message; // แสดงข้อความ
+                        resultElement.style.color = "orange"; // เปลี่ยนสีข้อความ
                     } else {
                         resultElement.innerText = "❌ No rooms scheduled for cleaning on this date.";
                         resultElement.style.color = "red";
