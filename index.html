@@ -115,9 +115,10 @@
             loadingGif.style.display = "block";
             submitBtn.disabled = true;
     
-            // ใช้ google.script.run แทน fetch
-            google.script.run
-                .withSuccessHandler(function (data) {
+            // ใช้ fetch
+            fetch("YOUR_GOOGLE_APPS_SCRIPT_URL?date=" + encodeURIComponent(formattedDate)) // แทนที่ YOUR_GOOGLE_APPS_SCRIPT_URL ด้วย URL ของ Google Apps Script
+                .then(response => response.json())
+                .then(data => {
                     loadingGif.style.display = "none";
                     submitBtn.disabled = false;
     
@@ -134,16 +135,14 @@
                         resultElement.style.color = "red";
                     }
                 })
-                .withFailureHandler(function (error) {
+                .catch(error => {
                     console.error("Error fetching data:", error);
-                    console.log("Error from Google Apps Script:", error); // เพิ่มการบันทึก
                     resultElement.innerText = "❌ Error retrieving data. Please try again.";
                     resultElement.style.color = "red";
                     loadingGif.style.display = "none";
                     submitBtn.disabled = false;
                     showModal("❌ An error occurred. Please try again.");
-                })
-                .getRooms(formattedDate); // เรียกใช้ฟังก์ชัน getRooms ใน Google Apps Script
+                });
         }
     
         function showModal(message) {
