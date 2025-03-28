@@ -116,7 +116,7 @@
             submitBtn.disabled = true;
     
             // ใช้ fetch
-            fetch("YOUR_GOOGLE_APPS_SCRIPT_URL?date=" + encodeURIComponent(formattedDate)) // แทนที่ YOUR_GOOGLE_APPS_SCRIPT_URL ด้วย URL ของ Google Apps Script
+            fetch("https://script.google.com/macros/s/AKfycbyYtofVZ0Zm76gpgADFrkDIT09--A3Pf8SE7YRhfO5I6mjBGuAWUH10LPojQvrwodZb/exec?date=" + encodeURIComponent(formattedDate)) // แทนที่ YOUR_GOOGLE_APPS_SCRIPT_URL ด้วย URL ของ Google Apps Script
                 .then(response => response.json())
                 .then(data => {
                     loadingGif.style.display = "none";
