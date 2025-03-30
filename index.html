@@ -162,14 +162,19 @@
                     submitBtn.disabled = false;
     
                     if (data.results && data.results.length > 0) {
-                        let message = "Rooms scheduled for cleaning on " + formatDate(searchDate) + ":<br>";
-                        data.results.forEach(room => {
-                            message += "Room: " + room.roomNumber + ", Details: " + room.roomDetails + ", Status: " + room.status + "<br>";
-                        });
-                        resultElement.innerHTML = message;
-                        resultElement.style.color = "green";
-                        showModal(message);
-                    } else if (data.error) {
+                    let table = "<table style='width:100%; border-collapse: collapse; margin-top: 10px;'>";
+                    table += "<thead><tr><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Room</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Details</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Status</th></tr></thead><tbody>";
+
+                    data.results.forEach(room => {
+                        table += `<tr><td style='border: 1px solid #ddd; padding: 8px;'>${room.roomNumber}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.roomDetails}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.status}</td></tr>`;
+                    });
+
+                    table += "</tbody></table>";
+                    let message = "Rooms scheduled for cleaning on " + formatDate(searchDate) + ":" + table;
+                    resultElement.innerHTML = message;
+                    resultElement.style.color = "green";
+                    showModal(message);
+                } else if (data.error) {
                         resultElement.innerText = data.error;
                         resultElement.style.color = "red";
                         showModal("❌ " + data.error);
