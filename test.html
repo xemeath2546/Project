@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาข้อมูลจาก Google Sheets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #search-container {
+            margin-bottom: 20px;
+        }
+        #results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #results-table th, #results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #results-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="search-container">
+        <label for="search-date">ป้อนวันที่:</label>
+        <input type="date" id="search-date">
+        <button onclick="search()">ค้นหา</button>
+    </div>
+
+    <table id="results-table">
+        <thead>
+            <tr>
+                <th>Room Number</th>
+                <th>Room Details</th>
+                <th>Status</th>
+                <th>Schedule Cleaning</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        function search() {
+            const searchDate = document.getElementById('search-date').value;
+            google.script.run.withSuccessHandler(displayResults).searchData(searchDate);
+        }
+
+        function displayResults(results) {
+            const resultsTableBody = document.querySelector('#results-table tbody');
+            resultsTableBody.innerHTML = ''; // ล้างผลลัพธ์เก่า
+
+            if (typeof results === 'string' && results === 'ไม่พบข้อมูล') {
+                const newRow = resultsTableBody.insertRow();
+                const newCell = newRow.insertCell();
+                newCell.textContent = 'ไม่พบข้อมูลสำหรับวันที่นี้';
+                newCell.colSpan = 4;
+            } else if (results.length > 0) {
+                results.forEach(row => {
+                    const newRow = resultsTableBody.insertRow();
+                    row.forEach(cell => {
+                        const newCell = newRow.insertCell();
+                        newCell.textContent = cell;
+                    });
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,33 +1,35 @@
-// function submitRoom(event) {
-//   event.preventDefault(); // ป้องกันการรีเฟรชหน้า
+function doGet(e) {
+  return HtmlService.createTemplateFromFile('test').evaluate();
+}
 
-//   let roomNumber = document.getElementById("roomNumber").value.trim();
-//   let pattern = /^[abcABC]\d{3}$/; // A, B, C (หรือ a, b, c) ตามด้วย 3 ตัวเลข
+function searchData(searchDate) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName('Sheet1'); // เปลี่ยน 'Sheet1' เป็นชื่อชีตของคุณ
+  const data = sheet.getDataRange().getValues();
 
-//   if (pattern.test(roomNumber)) {
-//     // ส่งค่าหมายเลขห้องไปยัง Google Apps Script Web App
-//     fetch(
-//       "https://script.google.com/macros/s/AKfycbw0E2-RAY8_30oUG_MySBsB6HlmR-XsH192lRuzzGoJaGlAiour8qizjghkBwsUntnAFw/exec?room=" +
-//         encodeURIComponent(roomNumber)
-//     )
-//       .then((response) => response.text())
-//       .then((data) => {
-//         document.getElementById("result").innerText =
-//           "Schedule Cleaning: " + data;
-//         document.getElementById("result").style.color = "green";
-//       })
-//       .catch((error) => {
-//         console.log("Error:", error);
-//         document.getElementById("result").innerText =
-//           "Error retrieving schedule.";
-//         document.getElementById("result").style.color = "red";
-//       });
-//   } else {
-//     document.getElementById("result").innerText =
-//       "Invalid format! Use A, B, or C followed by 3 digits.";
-//     document.getElementById("result").style.color = "red";
-//   }
-// }
+  const results = [];
 
-// // ผูกฟังก์ชันกับฟอร์ม
-// document.getElementById("roomForm").addEventListener("submit", submitRoom);
+  for (let i = 1; i < data.length; i++) {
+    try {
+      // แปลงวันที่ใน Google Sheets เป็น Date object
+      const dateObject = Utilities.parseDate(data[i][3], Session.getScriptTimeZone(), 'MM/dd/yyyy');
+
+      // แปลง Date object เป็นรูปแบบ YYYY-MM-DD
+      const formattedDate = Utilities.formatDate(dateObject, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+
+      if (formattedDate === searchDate) {
+        results.push([data[i][0], data[i][1], data[i][2], data[i][3]]); // ดึงข้อมูลทั้งหมด
+      }
+    } catch (e) {
+      // หากเกิดข้อผิดพลาดในการแปลงวันที่ ให้ข้ามแถวนั้น
+      Logger.log('Error parsing date: ' + data[i][3] + ' - ' + e);
+    }
+  }
+
+  // หากไม่พบข้อมูล ให้ส่งข้อความ "ไม่พบข้อมูล" กลับไปยังหน้าเว็บ
+  if (results.length === 0) {
+    return 'ไม่พบข้อมูล';
+  }
+
+  return results;
+}

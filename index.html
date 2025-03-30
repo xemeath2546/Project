@@ -4,74 +4,95 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Cleaning Schedule Lookup</title>
+    <title>Room Lookup</title>
     <style>
         body {
             background: #255cdc;
             color: #333;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', sans-serif; /* ใช้ฟอนต์ Poppins ทั่วทั้งหน้า */
             text-align: center;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding-bottom: 70px;
-            box-sizing: border-box;
-            position: relative;
+            height: 100vh;
         }
+        h2 {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        button {
+            font-weight: 400;
+        }
+        input {
+            font-weight: 300;
+        }
+
         .container {
             background: #ffffff;
             padding: 20px;
             border-radius: 10px;
             width: 90%;
-            max-width: 400px;
+            max-width: 350px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        input[type="text"], input[type="date"]{
-            padding: 10px;
-            width: calc(100% - 20px);
+
+        .logo {
+            width: auto;
+            height: auto;
+        }
+
+        .input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            background: #f5f5f5;
+            width: 80%;
             border: 2px solid #f5f5f5;
             border-radius: 5px;
-            font-size: 16px;
+            outline: #f5f5f5;
+            font-size: 14px;
             text-align: center;
-            margin-bottom: 20px;
         }
+
+        input[type="text"]:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+        }
+
         button {
             width: 90%;
-            padding: 12px;
+            padding: 10px;
             background: #007bff;
             color: white;
             border: none;
             cursor: pointer;
-            border-radius: 25px;
+            border-radius: 20px;
             transition: 0.3s;
-            font-size: 18px;
-            margin-top: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            font-size: 16px;
+            margin-top: 10px;
         }
+        
         button:hover {
             background: #0056b3;
-            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
         }
-        button:active {
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            transform: translateX(-50%) translateY(2px);
-        }
+
+        /* การจัดตำแหน่ง GIF ให้อยู่ตรงกลาง */
         .loading {
-            display: none;
-            height: 60px;
-            margin: 20px auto;
+            display: none; /* ซ่อน GIF เมื่อยังไม่ได้กด Submit */
+            margin-top: auto;
+            margin-bottom: auto;
+            width: auto; /* ขนาดของ GIF */
+            height: 60px; /* ขนาดของ GIF */
+            margin: 0 auto; /* จัดให้ตรงกลาง */
         }
-        #result {
-            margin-top: 30px;
-            font-size: 16px;
-            text-align: left;
-        }
+
         .modal {
             display: none;
             position: fixed;
@@ -84,6 +105,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .modal-content {
             background: white;
             padding: 20px;
@@ -91,39 +113,19 @@
             text-align: center;
             width: 90%;
             max-width: 300px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .modal-content button {
-            width: auto;
-            padding: 10px 20px;
-            margin-top: 15px;
-            position: static;
-            transform: translateX(0);
-        }
-        .room-list {
-            text-align: left;
-            margin-top: 15px;
-            padding-left: 20px;
-        }
-        .room-list li {
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-        h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #008000;
-            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Cleaning Schedule Lookup</h2>
-        <input type="date" id="dateInput" placeholder="Enter Date">
-        <button id="submitBtn" onclick="submitRoom()">Search</button>
+        <img class="logo" src="HOMA-LOGO150x34.png" alt="logo">
+        <h2>Air-conditioner Schedule Lookup</h2>
+        <div class="input-container">
+            <input type="date" id="searchDate" placeholder="YYYY-MM-DD">
+        </div>
+        <button id="submitBtn" onclick="submitDate()">Submit</button>
         <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
-        <div id="result"></div>
+        <p id="result"></p>
     </div>
 
     <div id="myModal" class="modal">
@@ -134,68 +136,69 @@
     </div>
 
     <script>
-        function submitRoom() {
-            const dateInput = document.getElementById('dateInput').value;
-            const resultElement = document.getElementById('result');
-            const submitBtn = document.getElementById('submitBtn');
-            const loadingGif = document.getElementById('loadingGif');
-
-            if (!dateInput) {
-                showModal("❌ Please enter a Date!");
-                return;
-            }
-
-            resultElement.innerHTML = "Searching...";
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+    
+        function submitDate() {
+            let searchDate = document.getElementById('searchDate').value;
+            let resultElement = document.getElementById('result');
+            let submitBtn = document.getElementById('submitBtn');
+            let loadingGif = document.getElementById('loadingGif');
+    
+            resultElement.innerText = "Searching...";
             resultElement.style.color = "blue";
             loadingGif.style.display = "block";
             submitBtn.disabled = true;
-
-            // **ตรวจสอบ URL อย่างละเอียดและสร้าง URL ที่ถูกต้อง**
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbxTBnfWrPRFXQ-IIph1mVptON7zeuqpCtxvOBsaBB_hyHcbJ4RZHcW4wX1he-jRu0GgZg/exec"; // **แทนที่ด้วย URL จริงของเว็บแอปของคุณ**
-            const url = scriptUrl + "?date=" + encodeURIComponent(dateInput);
-            console.log("Fetching URL:", url); // Log URL เพื่อตรวจสอบ
-
-            // **ตรวจสอบการเรียก fetch()**
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json(); // **ตรวจสอบว่ามีการเรียก response.json()**
-                })
+    
+            fetch("https://script.google.com/macros/s/AKfycbzY1MKoeRJsOIyG1u7h_TVoC_YY_GuYUmXlAtBhj2A8kV6smUSPUbzr4ycQR-sNJ_vsvw/exec?date=" + encodeURIComponent(searchDate))
+                .then(response => response.json())
                 .then(data => {
                     loadingGif.style.display = "none";
                     submitBtn.disabled = false;
-
-                    if (data && data.rooms) {
-                        let roomsHtml = '<p style="color: green; font-size: 18px;">Rooms scheduled for cleaning on ' + dateInput + ':</p><ul class="room-list">';
-                        data.rooms.forEach(room => {
-                            roomsHtml += `<li>Room ${room}</li>`;
+    
+                    if (data.results && data.results.length > 0) {
+                        let message = "Rooms scheduled for cleaning on " + formatDate(searchDate) + ":<br>";
+                        data.results.forEach(room => {
+                            message += "Room: " + room.roomNumber + ", Details: " + room.roomDetails + ", Status: " + room.status + "<br>";
                         });
-                        roomsHtml += '</ul>';
-                        resultElement.innerHTML = roomsHtml;
-                    } else if (data && data.message) {
-                        resultElement.innerHTML = `<p style="color: orange; font-size: 18px; text-align: center;">${data.message}</p>`;
+                        resultElement.innerHTML = message;
+                        resultElement.style.color = "green";
+                        showModal(message);
+                    } else if (data.error) {
+                        resultElement.innerText = data.error;
+                        resultElement.style.color = "red";
+                        showModal("❌ " + data.error);
                     } else {
-                         resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ No cleaning schedule found for Date ${dateInput}.</p>`;
+                        resultElement.innerText = "No rooms found for the selected date.";
+                        resultElement.style.color = "red";
+                        showModal("❌ No rooms found for " + formatDate(searchDate));
                     }
                 })
                 .catch(error => {
-                    console.error("Error fetching data:", error);
-                    resultElement.innerHTML = `<p style="color: red; font-size: 18px; text-align: center;">❌ Error: ${error.message || 'An unknown error occurred. Please try again.'}</p>`;
+                    console.error("Error:", error);
+                    resultElement.innerText = "❌ An error occurred.";
+                    resultElement.style.color = "red";
+                    showModal("❌ Please try again.");
                     loadingGif.style.display = "none";
                     submitBtn.disabled = false;
-                    showModal("❌ An error occurred. Please try again.");
                 });
         }
-
+    
+        // ฟังก์ชันแสดง modal
         function showModal(message) {
             document.getElementById("modalMessage").innerHTML = message;
             document.getElementById("myModal").style.display = "flex";
         }
-
+    
+        // ฟังก์ชันปิด modal
         function closeModal() {
             document.getElementById("myModal").style.display = "none";
+            location.reload();
         }
     </script>
 </body>
