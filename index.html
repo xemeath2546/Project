@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Lookup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Lookup</title>
     <style>
         body {
             background: #255cdc;
@@ -121,90 +121,83 @@
         <img class="logo" src="HOMA-LOGO150x34.png" alt="logo">
         <h2>Air-conditioner Schedule Lookup</h2>
         <div class="input-container">
-            <input type="date" id="searchDate" placeholder="YYYY-MM-DD">
+          <input type="text" id="searchDate" placeholder="dd/mm/yyyy">
         </div>
         <button id="submitBtn" onclick="submitDate()">Submit</button>
         <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
         <p id="result"></p>
-    </div>
+      </div>
 
-    <div id="myModal" class="modal">
+      <div id="myModal" class="modal">
         <div class="modal-content">
-            <p id="modalMessage"></p>
-            <button onclick="closeModal()">OK</button>
+          <p id="modalMessage"></p>
+          <button onclick="closeModal()">OK</button>
         </div>
-    </div>
+      </div>
 
-    <script>
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-    
+      <script>
         function submitDate() {
-            let searchDate = document.getElementById('searchDate').value;
-            let resultElement = document.getElementById('result');
-            let submitBtn = document.getElementById('submitBtn');
-            let loadingGif = document.getElementById('loadingGif');
-    
-            resultElement.innerText = "Searching...";
-            resultElement.style.color = "blue";
-            loadingGif.style.display = "block";
-            submitBtn.disabled = true;
-    
-            fetch("https://script.google.com/macros/s/AKfycbzY1MKoeRJsOIyG1u7h_TVoC_YY_GuYUmXlAtBhj2A8kV6smUSPUbzr4ycQR-sNJ_vsvw/exec?date=" + encodeURIComponent(searchDate))
-                .then(response => response.json())
-                .then(data => {
-                    loadingGif.style.display = "none";
-                    submitBtn.disabled = false;
-    
-                    if (data.results && data.results.length > 0) {
-                    let table = "<table style='width:100%; border-collapse: collapse; margin-top: 10px;'>";
-                    table += "<thead><tr><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Room</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Details</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Status</th></tr></thead><tbody>";
+          let searchDate = document.getElementById('searchDate').value;
+          console.log("วันที่ที่ส่งจาก JavaScript: " + searchDate); // ตรวจสอบค่า searchDate
 
-                    data.results.forEach(room => {
-                        table += `<tr><td style='border: 1px solid #ddd; padding: 8px;'>${room.roomNumber}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.roomDetails}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.status}</td></tr>`;
-                    });
+          let resultElement = document.getElementById('result');
+          let submitBtn = document.getElementById('submitBtn');
+          let loadingGif = document.getElementById('loadingGif');
+    
+          resultElement.innerText = "Searching...";
+          resultElement.style.color = "blue";
+          loadingGif.style.display = "block";
+          submitBtn.disabled = true;
+    
+          fetch("https://script.google.com/macros/s/AKfycbzc14GVsp2JOIFQCxzms2oszefJ1KCuIisQYjFqjfOxRBtPySPJFF0C6ot5solbUFNH5g/exec?date=" + encodeURIComponent(searchDate))
+            .then(response => response.json())
+            .then(data => {
+              loadingGif.style.display = "none";
+              submitBtn.disabled = false;
+    
+              if (data.results && data.results.length > 0) {
+        let table = "<table style='width:100%; border-collapse: collapse; margin-top: 10px;'>";
+        table += "<thead><tr><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Room</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Deep Clean</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Filter Air</th></tr></thead><tbody>";
 
-                    table += "</tbody></table>";
-                    let message = "Rooms scheduled for cleaning on " + formatDate(searchDate) + ":" + table;
-                    resultElement.innerHTML = message;
-                    resultElement.style.color = "green";
-                    showModal(message);
-                } else if (data.error) {
-                        resultElement.innerText = data.error;
-                        resultElement.style.color = "red";
-                        showModal("❌ " + data.error);
-                    } else {
-                        resultElement.innerText = "No rooms found for the selected date.";
-                        resultElement.style.color = "red";
-                        showModal("❌ No rooms found for " + formatDate(searchDate));
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    resultElement.innerText = "❌ An error occurred.";
-                    resultElement.style.color = "red";
-                    showModal("❌ Please try again.");
-                    loadingGif.style.display = "none";
-                    submitBtn.disabled = false;
-                });
+        data.results.forEach(room => {
+          table += `<tr><td style='border: 1px solid #ddd; padding: 8px;'>${room.roomNumber}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.deepCleanDate}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.filterAirDate}</td></tr>`;
+        });
+
+        table += "</tbody></table>";
+        let message = "Rooms scheduled for cleaning on " + searchDate + ":" + table;
+        resultElement.innerHTML = message;
+        resultElement.style.color = "green";
+        showModal(message);
+      } else if (data.error) {
+                resultElement.innerText = data.error;
+                resultElement.style.color = "red";
+                showModal("❌ " + data.error);
+              } else {
+                resultElement.innerText = "No rooms found for the selected date.";
+                resultElement.style.color = "red";
+                showModal("❌ No rooms found for " + searchDate);
+              }
+            })
+            .catch(error => {
+              console.error("Error:", error);
+              resultElement.innerText = "❌ An error occurred.";
+              resultElement.style.color = "red";
+              showModal("❌ Please try again.");
+              loadingGif.style.display = "none";
+              submitBtn.disabled = false;
+            });
         }
     
-        // ฟังก์ชันแสดง modal
+        // ฟังก์ชันแสดง modal และปิด modal (เหมือนเดิม)
         function showModal(message) {
-            document.getElementById("modalMessage").innerHTML = message;
-            document.getElementById("myModal").style.display = "flex";
+          document.getElementById("modalMessage").innerHTML = message;
+          document.getElementById("myModal").style.display = "flex";
         }
     
-        // ฟังก์ชันปิด modal
         function closeModal() {
-            document.getElementById("myModal").style.display = "none";
-            location.reload();
+          document.getElementById("myModal").style.display = "none";
+          location.reload();
         }
-    </script>
+      </script>
 </body>
 </html>
