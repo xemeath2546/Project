@@ -40,8 +40,13 @@
         }
 
         .logo {
-            width: auto;
-            height: auto;
+          display: block; /* จัดตำแหน่งตรงกลาง */
+    margin: 0 auto; /* จัดตำแหน่งตรงกลาง */
+    max-width: 250px; /* จำกัดขนาด logo */
+    max-height: 100px; /* จำกัดขนาด logo */
+    width: auto;
+    height: auto;
+    margin-bottom: 20px; /* เพิ่มระยะห่างระหว่าง logo และ h2 */
         }
 
         .input-container {
@@ -118,7 +123,7 @@
 </head>
 <body>
     <div class="container">
-        <img class="logo" src="HOMA-LOGO150x34.png" alt="logo">
+        <img class="logo" src="HomaLOGO.jpg" alt="logo">
         <h2>Air-conditioner Schedule Lookup</h2>
         <div class="input-container">
           <input type="text" id="searchDate" placeholder="dd/mm/yyyy">
