@@ -119,19 +119,57 @@
             width: 90%;
             max-width: 300px;
         }
+        input[type="date"] {
+        padding: 10px;
+        background: #f5f5f5;
+        width: 80%;
+        border: 2px solid #f5f5f5;
+        border-radius: 5px;
+        outline: #f5f5f5;
+        font-size: 16px;
+        text-align: left; /* จัดข้อความชิดซ้าย */
+        position: relative; /* เพิ่ม position relative */
+        padding-left: 40px; /* เพิ่ม padding เพื่อให้มีพื้นที่สำหรับ icon */
+        padding-right: 40px; /* เพิ่ม padding เพื่อให้มีพื้นที่สำหรับลูกศร */
+    }
+
+    input[type="date"]::before {
+        content: "\f073"; /* รหัส Unicode ของ icon ปฏิทิน (Font Awesome) */
+        font-family: "Font Awesome 5 Free"; /* ต้องเพิ่ม Font Awesome ใน <head> */
+        font-weight: 900;
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        font-size: 18px;
+    }
+
+    input[type="date"]::after {
+        content: "\f0d7"; /* รหัส Unicode ของ icon ลูกศรลง (Font Awesome) */
+        font-family: "Font Awesome 5 Free"; /* ต้องเพิ่ม Font Awesome ใน <head> */
+        font-weight: 900;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        font-size: 18px;
+    }
     </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <img class="logo" src="HomaLOGO.jpg" alt="logo">
-        <h2>Air-conditioner Schedule Lookup</h2>
-        <div class="input-container">
-          <input type="text" id="searchDate" placeholder="dd/mm/yyyy">
-        </div>
-        <button id="submitBtn" onclick="submitDate()">Submit</button>
-        <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
-        <p id="result"></p>
-      </div>
+  <div class="container">
+    <img class="logo" src="HomaLOGO.jpg" alt="logo">
+    <h2>Air-conditioner Schedule Lookup</h2>
+    <div class="input-container">
+        <input type="date" id="searchDate" placeholder="mm/dd/yyyy" name="date_from" format="yyyy-mm-dd">
+    </div>
+    <button id="submitBtn" onclick="submitDate()">Submit</button>
+    <img id="loadingGif" class="loading" src="loading.gif" alt="Loading...">
+    <p id="result"></p>
+</div>
 
       <div id="myModal" class="modal">
         <div class="modal-content">
@@ -142,67 +180,73 @@
 
       <script>
         function submitDate() {
-          let searchDate = document.getElementById('searchDate').value;
-          console.log("วันที่ที่ส่งจาก JavaScript: " + searchDate); // ตรวจสอบค่า searchDate
-
-          let resultElement = document.getElementById('result');
-          let submitBtn = document.getElementById('submitBtn');
-          let loadingGif = document.getElementById('loadingGif');
+            let searchDate = document.getElementById('searchDate').value;
+            console.log("วันที่ที่ส่งจาก JavaScript (yyyy-mm-dd): " + searchDate);
     
-          resultElement.innerText = "Searching...";
-          resultElement.style.color = "blue";
-          loadingGif.style.display = "block";
-          submitBtn.disabled = true;
+            // แปลงวันที่เป็น dd/MM/yyyy
+            let dateParts = searchDate.split('-');
+            let formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
     
-          fetch("https://script.google.com/macros/s/AKfycbzc14GVsp2JOIFQCxzms2oszefJ1KCuIisQYjFqjfOxRBtPySPJFF0C6ot5solbUFNH5g/exec?date=" + encodeURIComponent(searchDate))
-            .then(response => response.json())
-            .then(data => {
-              loadingGif.style.display = "none";
-              submitBtn.disabled = false;
+            console.log("วันที่ที่ส่งจาก JavaScript (dd/MM/yyyy): " + formattedDate);
     
-              if (data.results && data.results.length > 0) {
-        let table = "<table style='width:100%; border-collapse: collapse; margin-top: 10px;'>";
-        table += "<thead><tr><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Room</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Deep Clean</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Filter Air</th></tr></thead><tbody>";
-
-        data.results.forEach(room => {
-          table += `<tr><td style='border: 1px solid #ddd; padding: 8px;'>${room.roomNumber}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.deepCleanDate}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.filterAirDate}</td></tr>`;
-        });
-
-        table += "</tbody></table>";
-        let message = "Rooms scheduled for cleaning on " + searchDate + ":" + table;
-        resultElement.innerHTML = message;
-        resultElement.style.color = "green";
-        showModal(message);
-      } else if (data.error) {
-                resultElement.innerText = data.error;
-                resultElement.style.color = "red";
-                showModal("❌ " + data.error);
-              } else {
-                resultElement.innerText = "No rooms found for the selected date.";
-                resultElement.style.color = "red";
-                showModal("❌ No rooms found for " + searchDate);
-              }
-            })
-            .catch(error => {
-              console.error("Error:", error);
-              resultElement.innerText = "❌ An error occurred.";
-              resultElement.style.color = "red";
-              showModal("❌ Please try again.");
-              loadingGif.style.display = "none";
-              submitBtn.disabled = false;
-            });
+            let resultElement = document.getElementById('result');
+            let submitBtn = document.getElementById('submitBtn');
+            let loadingGif = document.getElementById('loadingGif');
+    
+            resultElement.innerText = "Searching...";
+            resultElement.style.color = "blue";
+            loadingGif.style.display = "block";
+            submitBtn.disabled = true;
+    
+            fetch("https://script.google.com/macros/s/AKfycbzc14GVsp2JOIFQCxzms2oszefJ1KCuIisQYjFqjfOxRBtPySPJFF0C6ot5solbUFNH5g/exec?date=" + encodeURIComponent(formattedDate))
+                .then(response => response.json())
+                .then(data => {
+                    loadingGif.style.display = "none";
+                    submitBtn.disabled = false;
+    
+                    if (data.results && data.results.length > 0) {
+                        let table = "<table style='width:100%; border-collapse: collapse; margin-top: 10px;'>";
+                        table += "<thead><tr><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Room</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Deep Clean</th><th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Filter Air</th></tr></thead><tbody>";
+    
+                        data.results.forEach(room => {
+                            table += `<tr><td style='border: 1px solid #ddd; padding: 8px;'>${room.roomNumber}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.deepCleanDate}</td><td style='border: 1px solid #ddd; padding: 8px;'>${room.filterAirDate}</td></tr>`;
+                        });
+    
+                        table += "</tbody></table>";
+                        let message = "Rooms scheduled for cleaning on " + formattedDate + ":" + table;
+                        resultElement.innerHTML = message;
+                        resultElement.style.color = "green";
+                        showModal(message);
+                    } else if (data.error) {
+                        resultElement.innerText = data.error;
+                        resultElement.style.color = "red";
+                        showModal("❌ " + data.error);
+                    } else {
+                        resultElement.innerText = "No rooms found for the selected date.";
+                        resultElement.style.color = "red";
+                        showModal("❌ No rooms found for " + formattedDate);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    resultElement.innerText = "❌ An error occurred.";
+                    resultElement.style.color = "red";
+                    showModal("❌ Please try again.");
+                    loadingGif.style.display = "none";
+                    submitBtn.disabled = false;
+                });
         }
     
         // ฟังก์ชันแสดง modal และปิด modal (เหมือนเดิม)
         function showModal(message) {
-          document.getElementById("modalMessage").innerHTML = message;
-          document.getElementById("myModal").style.display = "flex";
+            document.getElementById("modalMessage").innerHTML = message;
+            document.getElementById("myModal").style.display = "flex";
         }
     
         function closeModal() {
-          document.getElementById("myModal").style.display = "none";
-          location.reload();
+            document.getElementById("myModal").style.display = "none";
+            location.reload();
         }
-      </script>
+    </script>
 </body>
 </html>
