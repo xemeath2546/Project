@@ -8,7 +8,7 @@
     <style>
         body {
             /* เปลี่ยนบรรทัดนี้ */
-            background: url('bg sea.jpg') no-repeat center center fixed;
+            background: url('BG8bit.gif') no-repeat center center fixed;
             background-size: cover; /* ปรับขนาดรูปภาพให้เต็มพื้นหลัง */
             color: #333;
             font-family: 'Poppins', sans-serif; /* ใช้ฟอนต์ Poppins ทั่วทั้งหน้า */
@@ -74,21 +74,57 @@
         }
 
         button {
-            width: 90%;
-            padding: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 20px;
-            transition: 0.3s;
-            font-size: 16px;
-            margin-top: 10px;
-        }
+width: 90%;
+padding: 12px 20px;
+background-color: #000; /* พื้นหลังสีดำ */
+color: white;
+border: 2px solid transparent;
+border-radius: 20px;
+font-size: 16px;
+font-weight: bold;
+cursor: pointer;
+position: relative;
+z-index: 1;
+transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* เพิ่ม transition */
+overflow: hidden; /* ป้องกันไม่ให้ glow ล้นออกมา */
+}
+
+button::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(45deg, green, blue, indigo, violet);
+background-size: 400%;
+z-index: -1;
+transition: transform 0.4s ease-in-out;
+transform: translateX(-100%); /* ซ่อน glow ตอนเริ่มต้น */
+animation: rainbowGlow 3s linear infinite; /* เพิ่ม animation */
+}
+
+button:hover {
+color: #fff; /* เปลี่ยนสีตัวอักษรเมื่อ hover */
+box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* เพิ่มเงา */
+}
+
+button:hover::before {
+transform: translateX(0); /* เลื่อน glow เข้ามาเมื่อ hover */
+}
+
+@keyframes rainbowBorder {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+
+@keyframes rainbowGlow {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
         
-        button:hover {
-            background: #0056b3;
-        }
 
         /* การจัดตำแหน่ง GIF ให้อยู่ตรงกลาง */
         .loading {
